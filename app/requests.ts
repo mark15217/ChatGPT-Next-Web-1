@@ -1,6 +1,7 @@
 import type { ChatRequest, ChatReponse } from "./api/openai/typing";
 import { Message, ModelConfig, useAccessStore, useChatStore } from "./store";
 import { showToast } from "./components/ui-lib";
+import { ChatCompletionRequestMessageRoleEnum } from "openai";
 
 const TIME_OUT_MS = 30000;
 
@@ -19,6 +20,13 @@ const makeRequestParam = (
   if (options?.filterBot) {
     sendMessages = sendMessages.filter((m) => m.role !== "assistant");
   }
+  sendMessages = sendMessages.filter((m) => m.role !== "system");
+
+  sendMessages.push({
+    role: ChatCompletionRequestMessageRoleEnum.System,
+    content:
+      "现在你是一名专业的律师，针对我的情况给出相应的细节法律帮助，需要参考中国的相关法律给出帮助，并且附加上每一个内容所在的相关法律条款",
+  });
 
   const modelConfig = { ...useChatStore.getState().config.modelConfig };
 
